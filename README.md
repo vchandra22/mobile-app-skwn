@@ -3,10 +3,9 @@
 Proyek ini adalah aplikasi mobile yang dibangun menggunakan **Expo React Native Blank Template** sebagai bagian dari technical test untuk **Internship Sekawan Media**.
 
 ## 📂 APK Installer
-File **APK Installer** dapat ditemukan dalam folder berikut:
-```
-apk-installer/
-```
+File **APK Installer** dapat diunduh melalui link berikut:
+
+https://expo.dev/artifacts/eas/bZKMhSUeQXYeoQMYL811NT.apk 
 
 ## Screenshoot Aplikasi
 ![detail-post.jpeg](screenshoot-app/detail-post.jpeg)
