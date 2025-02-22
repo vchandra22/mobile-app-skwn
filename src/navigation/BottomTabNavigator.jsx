@@ -1,12 +1,22 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import DetailPostScreen from '../screens/DetailPostScreen';
 import { Svg, Path } from 'react-native-svg';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const HomeStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="HomeMain" component={HomeScreen} />
+        <Stack.Screen name="DetailPost" component={DetailPostScreen} options={{ headerShown: true, title: 'Detail Post' }} />
+    </Stack.Navigator>
+);
 
 const FloatingTabBar = ({ state, descriptors, navigation }) => {
     return (
@@ -14,7 +24,6 @@ const FloatingTabBar = ({ state, descriptors, navigation }) => {
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];
                 const label = options.tabBarLabel ?? route.name;
-
                 const isFocused = state.index === index;
 
                 const onPress = () => {
@@ -72,7 +81,7 @@ const BottomTabNavigator = () => {
                 tabBar={(props) => <FloatingTabBar {...props} />}
                 screenOptions={{ headerShown: false }}
             >
-                <Tab.Screen name="Home" component={HomeScreen} />
+                <Tab.Screen name="Home" component={HomeStack} />
                 <Tab.Screen name="Profile" component={ProfileScreen} />
                 <Tab.Screen name="Settings" component={SettingsScreen} />
             </Tab.Navigator>
@@ -93,7 +102,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 25,
         paddingVertical: 10,
-        
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: '#e8e8e8',
     },
     tabButton: {
         alignItems: 'center',
