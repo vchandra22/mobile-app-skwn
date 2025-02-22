@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
 import axiosInstance from '../services/axiosInstance';
-import { Ionicons, } from "react-native-vector-icons";
-import Feather from "react-native-vector-icons/Feather";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
+import { Ionicons, Feather, Entypo, AntDesign } from "react-native-vector-icons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const DetailPostScreen = ({ route }) => {
     const { postId } = route.params;
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [liked, setLiked] = useState(false);
+    const [reposted, setReposted] = useState(false);
+    const [bookmarked, setBookmarked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    const [repostCount, setRepostCount] = useState(0);
 
     useEffect(() => {
         const fetchPostAndComments = async () => {
@@ -30,6 +33,20 @@ const DetailPostScreen = ({ route }) => {
 
         fetchPostAndComments();
     }, [postId]);
+
+    const handleLike = () => {
+        setLiked(!liked);
+        setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+    };
+    
+    const handleRepost = () => {
+        setReposted(!reposted);
+        setRepostCount(reposted ? repostCount -1 : repostCount + 1);
+    }
+    
+    const handleBookmarked = () => {
+        setBookmarked(!bookmarked);
+    }
 
     if (loading) {
         return <ActivityIndicator size="large" color="#1DA1F2" style={styles.loader} />;
@@ -54,16 +71,28 @@ const DetailPostScreen = ({ route }) => {
                 </View>
                 <Text style={styles.body}>{post.body}</Text>
                 <View style={styles.containerIcon}>
-                    <TouchableOpacity style={styles.iconPost}>
-                        <Ionicons size={24} name="heart-outline" style={styles.icon} />
-                        <Text style={styles.body}>128 likes</Text>
+                    <TouchableOpacity style={styles.iconPost} onPress={handleLike}>
+                        <Ionicons
+                            size={24}
+                            name={liked ? "heart" : "heart-outline"}
+                            style={[styles.icon, liked && { color: 'red' }]}
+                        />
+                        <Text style={styles.body}>{likesCount} likes</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconPost}>
-                        <AntDesign size={24} name="sharealt" style={styles.icon} />
-                        <Text style={styles.body}>28 repost</Text>
+                    <TouchableOpacity style={styles.iconPost} onPress={handleRepost}>
+                        <AntDesign 
+                            size={24} 
+                            name={reposted ? "sharealt" : "sharealt"}
+                            style={[styles.icon, reposted && { color: 'green' }]}
+                        />
+                        <Text style={styles.body}>{repostCount} repost</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconPost}>
-                        <Feather size={24} name="bookmark" style={styles.icon} />
+                    <TouchableOpacity style={styles.iconPost} onPress={handleBookmarked}>
+                        <FontAwesome 
+                            size={24} 
+                            name={bookmarked ? "bookmark" : "bookmark-o"}
+                            style={[styles.icon, bookmarked && { color: 'orange' }]} 
+                        />
                         <Text style={styles.body}>Bookmark</Text>
                     </TouchableOpacity>
                 </View>
@@ -90,11 +119,11 @@ const DetailPostScreen = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fdfdfd',
+        backgroundColor: '#fcfcfc',
+        paddingBottom: 100
     },
     titlePost: {
         flexDirection: 'row',
-        alignItems: 'start',
         justifyContent: 'space-between',
     },
     containerIcon: {
@@ -139,7 +168,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 20,
         marginBottom: 12,
-        marginLeft: 0,
         paddingHorizontal: 20
     },
     noComments: {
@@ -152,10 +180,8 @@ const styles = StyleSheet.create({
     commentContainer: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderStyle: 'solid',
-        borderColor: '#e8e8e8',
         borderBottomWidth: 1,
-        
+        borderColor: '#e8e8e8',
     },
     commentAuthor: {
         fontWeight: 'bold',

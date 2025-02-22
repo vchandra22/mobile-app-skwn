@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import DetailPostScreen from '../screens/DetailPostScreen';
 import { Svg, Path } from 'react-native-svg';
 
@@ -57,12 +56,6 @@ const FloatingTabBar = ({ state, descriptors, navigation }) => {
                                     fill={isFocused ? '#243048' : '#95a5a6'}
                                 />
                             )}
-                            {route.name === 'Settings' && (
-                                <Path
-                                    d="M19.43 12.98c.04-.32.07-.65.07-.98s-.03-.66-.07-.98l2.11-1.65a.5.5 0 00.12-.63l-2-3.46a.5.5 0 00-.58-.22l-2.49 1a6.96 6.96 0 00-1.6-.93l-.38-2.65A.5.5 0 0014 3h-4a.5.5 0 00-.5.44l-.38 2.65c-.55.24-1.07.54-1.6.93l-2.49-1a.5.5 0 00-.58.22l-2 3.46a.5.5 0 00.12.63l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65a.5.5 0 00-.12.63l2 3.46c.14.25.45.35.71.22l2.49-1c.49.39 1.05.7 1.6.93l.38 2.65a.5.5 0 00.5.44h4a.5.5 0 00.5-.44l.38-2.65c.55-.24 1.07-.54 1.6-.93l2.49 1a.5.5 0 00.71-.22l2-3.46a.5.5 0 00-.12-.63l-2.11-1.65zM12 15a3 3 0 110-6 3 3 0 010 6z"
-                                    fill={isFocused ? '#243048' : '#95a5a6'}
-                                />
-                            )}
                         </Svg>
                         <Text style={[styles.tabLabel, isFocused && styles.activeLabel]}>
                             {label}
@@ -83,7 +76,6 @@ const BottomTabNavigator = () => {
             >
                 <Tab.Screen name="Home" component={HomeStack} />
                 <Tab.Screen name="Profile" component={ProfileScreen} />
-                <Tab.Screen name="Settings" component={SettingsScreen} />
             </Tab.Navigator>
         </NavigationContainer>
     );

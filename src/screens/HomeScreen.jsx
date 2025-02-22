@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, View} from 'react-native';
+import { Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axiosInstance from '../services/axiosInstance';
-import {SafeAreaView} from "react-native-safe-area-context";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import Feather from "react-native-vector-icons/Feather";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AntDesign, Ionicons } from "react-native-vector-icons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const HomeScreen = () => {
     const [posts, setPosts] = useState([]);
@@ -15,7 +14,13 @@ const HomeScreen = () => {
     useEffect(() => {
         axiosInstance.get('/posts')
             .then(response => {
-                setPosts(response.data);
+                const updatedPosts = response.data.map(post => ({
+                    ...post,
+                    bookmarked: false,
+                    liked: post.liked ?? false,
+                    likesCount: post.likesCount ?? 0, // Pastikan default 0
+                }));
+                setPosts(updatedPosts);
             })
             .catch(error => {
                 console.error('Error fetching posts:', error);
@@ -25,6 +30,40 @@ const HomeScreen = () => {
             });
     }, []);
 
+    const handleLike = (postId) => {
+        setPosts(prevPosts =>
+            prevPosts.map(post =>
+                post.id === postId
+                    ? {
+                        ...post,
+                        liked: !post.liked,
+                        likesCount: (post.likesCount ?? 0) + (post.liked ? -1 : 1) // Pastikan likesCount valid
+                    }
+                    : post
+            )
+        );
+    };
+
+    const handleRepost = (postId) => {
+        setPosts(prevPosts =>
+            prevPosts.map(post =>
+                post.id === postId
+                    ? {
+                        ...post,
+                        reposted: !post.reposted,
+                        repostedCount: (post.repostedCount ?? 0) + (post.reposted ? -1 : 1)
+                    }
+                    : post
+            )
+        );
+    };
+
+    const handleBookmarked = (postId) => {
+        setPosts(prevPosts => prevPosts.map(post =>
+            post.id === postId ? { ...post, bookmarked: !post.bookmarked } : post
+        ));
+    };
+
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.postContainer}
@@ -33,16 +72,28 @@ const HomeScreen = () => {
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.body}>{item.body}</Text>
             <View style={styles.containerIcon}>
-                <TouchableOpacity style={styles.iconPost}>
-                    <Ionicons size={24} name="heart-outline" style={styles.icon} />
-                    <Text style={styles.body}>128 likes</Text>
+                <TouchableOpacity style={styles.iconPost} onPress={() => handleLike(item.id)}>
+                    <Ionicons
+                        size={24}
+                        name={item.liked ? "heart" : "heart-outline"}
+                        style={[styles.icon, item.liked && { color: 'red' }]}
+                    />
+                    <Text style={styles.body}>{item.likesCount ?? 0} likes</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconPost}>
-                    <AntDesign size={24} name="sharealt" style={styles.icon} />
-                    <Text style={styles.body}>28 repost</Text>
+                <TouchableOpacity style={styles.iconPost} onPress={() => handleRepost(item.id)}>
+                    <AntDesign 
+                        size={24} 
+                        name={item.reposted ? "sharealt" : "sharealt"} 
+                        style={[styles.icon, item.reposted && { color: 'green' }]}
+                    />
+                    <Text style={styles.body}>{item.repostedCount ?? 0} repost</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconPost}>
-                    <Feather size={24} name="bookmark" style={styles.icon} />
+                <TouchableOpacity style={styles.iconPost} onPress={() => handleBookmarked(item.id)}>
+                    <FontAwesome
+                        size={24}
+                        name={item.bookmarked ? "bookmark" : "bookmark-o"}
+                        style={[styles.icon, item.bookmarked && { color: 'orange' }]}
+                    />
                     <Text style={styles.body}>Bookmark</Text>
                 </TouchableOpacity>
             </View>
@@ -51,6 +102,9 @@ const HomeScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>Home</Text>
+            </View>
             {loading ? <ActivityIndicator size="large" color="#1DA1F2" /> : (
                 <FlatList
                     data={posts}
@@ -67,6 +121,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fcfcfc',
+    },
+    header: {
+        padding: 20,
+        alignItems: 'center',
+        backgroundColor: '#fcfcfc',
+    },
+    headerText: {
+        color: '#243048',
+        fontSize: 20,
+        fontWeight: 'bold'
     },
     containerIcon: {
         flexDirection: 'row',
@@ -97,6 +161,9 @@ const styles = StyleSheet.create({
         color: '#555',
         marginTop: 5,
     },
+    icon: {
+        color: '#333',
+    }
 });
 
 export default HomeScreen;
